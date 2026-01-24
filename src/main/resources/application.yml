@@ -1,0 +1,27 @@
+server:
+  address: ${HOST:0.0.0.0}
+  port: ${PORT:8000}
+
+spring:
+  ai:
+    mcp:
+      server:
+        protocol: STREAMABLE
+        name: aigohotel-mcp
+        version: 0.1.0
+        type: SYNC
+        annotation-scanner:
+          enabled: true
+        streamable-http:
+          mcp-endpoint: ${MCP_ENDPOINT:/mcp}
+          keep-alive-interval: 30s
+        tool-response-mime-type:
+          search_hotels: application/json
+
+aigohotel:
+  api-key: ${AIGOHOTEL_API_KEY:}
+  secret-key: ${AIGOHOTEL_SECRET_KEY:}
+
+logging:
+  level:
+    root: INFO
