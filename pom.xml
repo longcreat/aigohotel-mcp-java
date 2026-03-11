@@ -5,9 +5,9 @@
 
   <groupId>com.aigohotel</groupId>
   <artifactId>aigohotel-mcp-java</artifactId>
-  <version>0.1.0</version>
+  <version>1.0.0</version>
   <name>AigoHotel MCP Server (Java)</name>
-  <description>MCP server for global hotel search powered by AIGOHOTEL API</description>
+  <description>MCP server for AIGOHOTEL hotel search, detail and tags APIs</description>
 
   <properties>
     <java.version>17</java.version>

@@ -8,7 +8,7 @@ spring:
       server:
         protocol: STREAMABLE
         name: aigohotel-mcp
-        version: 0.1.0
+        version: 1.0.0
         type: SYNC
         annotation-scanner:
           enabled: true
@@ -16,11 +16,13 @@ spring:
           mcp-endpoint: ${MCP_ENDPOINT:/mcp}
           keep-alive-interval: 30s
         tool-response-mime-type:
-          search_hotels: application/json
+          searchHotels: application/json
+          getHotelDetail: application/json
+          getHotelSearchTags: application/json
 
 aigohotel:
   api-key: ${AIGOHOTEL_API_KEY:}
-  secret-key: ${AIGOHOTEL_SECRET_KEY:}
+  secret-key: ${AIGOHOTEL_SECRET_KEY:mcp_caf6f0b0a10242e7b88a7417962a3a2a}
 
 logging:
   level:

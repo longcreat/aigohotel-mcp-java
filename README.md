@@ -1,142 +1,76 @@
 # AigoHotel MCP Server (Java)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Java 17+](https://img.shields.io/badge/Java-17%2B-orange.svg)](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
+AIGOHOTEL 酒店 MCP Server（Spring AI / Java 版本）。
 
-AIGOHOTEL 酒店搜索 MCP Server。通过标准的 Model Context Protocol (MCP) 协议为 AI 助手提供全球酒店搜索能力。
+当前版本与 `aigohotel-mcp` 主仓对齐，提供以下 3 个工具：
 
-## 工具列表
+- `searchHotels`：按地点 + 结构化条件搜索酒店候选
+- `getHotelDetail`：查询单个酒店实时房型与价格明细
+- `getHotelSearchTags`：获取酒店搜索标签元数据（AI Cache）
 
-**search_hotels** - 查询全球酒店信息
+## 工具参数概览
 
-- 支持按城市、景点、酒店、交通枢纽等多种地点类型搜索
-- 支持星级筛选、距离筛选、入住日期等多维度条件
-- 返回符合条件的酒店列表(JSON结构化数据)
+### `searchHotels`
 
-### 请求参数
+必填参数：
 
-**必填参数**:
+- `originQuery` (string)
+- `place` (string)
+- `placeType` (string)
 
-- **place** (string): 目的地(城市、景点、酒店、交通枢纽、地标等)
-- **placeType** (string): 目的地类型(城市、区/县、机场、火车站、酒店、景点等)
+可选参数：
 
-**可选参数**:
+- `checkInParam` (object)
+- `countryCode` (string)
+- `filterOptions` (object)
+- `hotelTags` (object)
+- `size` (number, 默认 5)
 
-- **originalQuery** (string): 用户的原始问询句
-- **checkIn** (string): 入住日期,格式 yyyy-MM-dd,默认次日
-- **stayNights** (int): 入住晚数,默认 1
-- **starRatings** (array): 酒店星级范围,如 [4.5, 5.0],默认 [0.0, 5.0]
-- **adultCount** (int): 每间房成人数量,默认 2
-- **distanceInMeter** (int): 距离景点的米数,默认 5000
-- **size** (int): 返回结果数量,默认 10,最大 20
-- **withHotelAmenities** (bool): 是否包含酒店设施,默认 true
-- **withRoomAmenities** (bool): 是否包含客房设施,默认 true
-- **language** (string): 语言环境(zh_CN, en_US等),默认 zh_CN
-- **queryParsing** (bool): 是否分析用户个性化需求,默认 true
+### `getHotelDetail`
 
-### 返回参数
+可选参数（`hotelId` 和 `name` 至少提供一个）：
 
-```json
-{
-  "message": "酒店搜索成功",
-  "hotelInformationList": [
-    {
-      "hotelId": "酒店ID",
-      "name": "酒店名称",
-      "address": "酒店位置",
-      "destinationId": "目的地",
-      "latitude": 30.665025,
-      "longitude": 104.066475,
-      "starRating": 5.0,
-      "bookingUrl": "酒店预定详情页",
-      "description": "酒店描述",
-      "imageUrl": "酒店首图",
-      "areaCode": "国家",
-      "price": 549.0,
-      "hotelAmenities": [
-        "咖啡厅咖啡厅",
-        "会议厅会议室"
-      ],
-      "hotelRoomAmenities": [],
-      "score": "个性化评分",
-      "currency": "CNY"
-    }
-  ]
-}
-```
+- `hotelId` (number)
+- `name` (string)
+- `dateParam` (object)
+- `occupancyParam` (object)
+- `localeParam` (object)
 
-## 配置方法
+### `getHotelSearchTags`
 
-当前版本基于 Spring AI MCP Server WebFlux, 支持 `streamable-http` 传输。
+- 无参数
 
-### 1. 准备环境
-
-- Java 17+
-- Maven 3.8+
-
-### 2. 配置鉴权信息
-
-支持两种鉴权方式,可单独使用或同时配置:
-
-- **Bearer Token**: `AIGOHOTEL_API_KEY`
-- **X-Secret-Key**: `AIGOHOTEL_SECRET_KEY`
-
-```bash
-# Windows (PowerShell)
-$env:AIGOHOTEL_API_KEY="mcp_your_api_key_here"
-$env:AIGOHOTEL_SECRET_KEY="mcp_your_secret_key_here"
-
-# Linux/Mac
-export AIGOHOTEL_API_KEY="mcp_your_api_key_here"
-export AIGOHOTEL_SECRET_KEY="mcp_your_secret_key_here"
-```
-
-> **提示**:
->
-> - 前往 https://mcp.agentichotel.cn/apply 申请 API Key
-> - Key 一般以 `mcp_` 开头
-
-### 3. 启动服务器
+## 启动
 
 ```bash
 mvn spring-boot:run
 ```
 
-启动成功后会显示:
+默认监听：`http://localhost:8000/mcp`
 
-```
-AigoHotel MCP Server 启动中...
-MCP 端点: http://0.0.0.0:8000/mcp (默认)
-Bearer Token: 已配置
-X-Secret-Key: 已配置
-```
+## 鉴权
 
-## MCP 客户端配置
+服务端从 MCP HTTP 请求头读取 API Key，支持：
 
-在 MCP 配置文件中添加以下内容:
+- `Authorization: Bearer <your_key>`
+- `X-Secret-Key: <your_key>`
+
+## MCP 客户端配置示例
 
 ```json
 {
   "mcpServers": {
     "aigohotel": {
-      "url": "http://localhost:8000/mcp"
+      "url": "http://localhost:8000/mcp",
+      "headers": {
+        "Authorization": "Bearer mcp_your_key"
+      }
     }
   }
 }
 ```
 
-## API 鉴权说明
-
-### 申请 API Key
-
-访问 https://mcp.agentichotel.cn/apply 申请 API Key
-
-## 许可证
-
-本项目采用 MIT 许可证。
-
 ## 相关链接
 
-- [Model Context Protocol](https://modelcontextprotocol.io/)
-- [Spring AI MCP](https://docs.spring.io/spring-ai/reference/)
-- [API Key 申请](https://mcp.agentichotel.cn/apply)
+- API Key 申请：https://mcp.agentichotel.cn/apply
+- Spring AI MCP：https://docs.spring.io/spring-ai/reference/
